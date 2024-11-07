@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Watch Style ScrollView</title>
+    <style>
+        /* Body and scroll container styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            font-family: sans-serif;
+        }
+
+        .scroll-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-evenly;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .ball {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            transition: transform 0.5s, opacity 0.5s;
+            opacity: 1;
+            margin: 5px 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7em;
+            text-align: center;
+            font-weight: bold;
+            padding: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Animation states */
+        .fade-out {
+            transform: translateY(-30px);
+            opacity: 0;
+        }
+
+        .fade-in {
+            transform: translateY(30px);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-container">
+        <!-- JavaScript will populate rows of balls here -->
+    </div>
+
+    <script>
+        const container = document.querySelector('.scroll-container');
+
+        // Colors and associated words
+        const colors = {
+            yellow: {
+                color: '#FFE71D',
+                words: [
+                    'Dromer', 'Experimenteel', 'Nieuwsgierig', 'Gokker',
+                    'Speculeert', 'Avontuurlijk', 'Grensverlegger', 'Risico\'s nemen',
+                    'Design', 'Houdt van verrassingen', 'Innovatief', 'Conceptueel',
+                    'Strategie bepalen', 'Verbeeldend', 'Afwisseling', 'Entertaining'
+                ]
+            },
+            green: {
+                color: '#00ADB8',
+                words: [
+                    'Organiseert', 'Zoekt zekerheid', 'Handhaaft regels', 'Plant',
+                    'Voert uit', 'Bereidt voor', 'Discipline', 'Betrouwbaar',
+                    'Geordend', 'Volgorde', 'Op tijd', 'Stapsgewijs',
+                    'Procedures', 'Handmatig', 'Controle', 'Methodisch'
+                ]
+            },
+            red: {
+                color: '#F4A6A0',
+                words: [
+                    'Praat veel', 'Spiritueel', 'Sensitief', 'Gevoelig',
+                    'Empathisch', 'Verzorgend', 'Onderwijzend', 'Samenwerken',
+                    'Sociaal', 'Luisteren', 'Expressief', 'Supporting',
+                    'Persoonlijk', 'Aanvoelen', 'Helpend', 'Overtuigen'
+                ]
+            },
+            blue: {
+                color: '#1F2C57',
+                words: [
+                    'Technisch', 'Rationeel', 'Cijferaar', 'Analist',
+                    'Materialistisch', 'Financieel', 'Kwantificeert', 'Exact',
+                    'Logisch', 'Welbespraakt', 'Kritisch', 'Wetenschappelijk',
+                    'Onderzoek', 'Uitdaging', 'Diagnose', 'Engineering'
+                ]
+            }
+        };
+
+        // Function to get random color and word
+        function getRandomColorAndWord() {
+            const colorKeys = Object.keys(colors);
+            const randomColorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+            const colorData = colors[randomColorKey];
+            const randomWord = colorData.words[Math.floor(Math.random() * colorData.words.length)];
+            return { color: colorData.color, word: randomWord };
+        }
+
+        // Generate 80 balls in alternating rows of 3 and 4
+        for (let i = 0; i < 80; i++) {
+            const row = document.createElement('div');
+            row.classList.add('row');
+
+            // Determine the number of balls in the row (alternating between 3 and 4)
+            const numBalls = i % 2 === 0 ? 3 : 4;
+            for (let j = 0; j < numBalls; j++) {
+                const ball = document.createElement('div');
+                ball.classList.add('ball');
+
+                // Get a random color and word for each ball
+                const { color, word } = getRandomColorAndWord();
+                ball.style.backgroundColor = color;
+                ball.textContent = word;
+
+                row.appendChild(ball);
+            }
+
+            container.appendChild(row);
+        }
+
+        // Intersection Observer to animate rows entering and leaving the view
+        const observerOptions = {
+            root: container,
+            threshold: 0.1,
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    entry.target.classList.remove('fade-out');
+                } else {
+                    entry.target.classList.add('fade-out');
+                    entry.target.classList.remove('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe each row
+        document.querySelectorAll('.row').forEach(row => observer.observe(row));
+    </script>
+</body>
+</html>
